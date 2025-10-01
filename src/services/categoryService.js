@@ -1,52 +1,74 @@
+// src/services/categoryService.js
+
 const Category = require('../models/categoryModel');
 
-class CategoryService {
-  async create(data) {
-    try {
-      const category = new Category(data);
-      return await category.save();
-    } catch (error) {
-      throw new Error(`Error al crear categoría: ${error.message}`);
-    }
-  }
+// Las funciones aquí solo reciben datos (NO req, NO res)
+// Solo interactúan con la base de datos o la lógica de negocio
 
-  async getAll() {
-    try {
-      return await Category.find();
-    } catch (error) {
-      throw new Error(`Error al obtener categorías: ${error.message}`);
-    }
-  }
+/**
+ * Crea una nueva categoría en la base de datos.
+ */
+const createCategory = async (categoryData) => {
+    const newCategory = new Category(categoryData);
+    await newCategory.save();
+    return newCategory;
+};
 
-  async getById(id) {
-    try {
-      const category = await Category.findById(id);
-      if (!category) throw new Error('Categoría no encontrada');
-      return category;
-    } catch (error) {
-      throw new Error(`Error al obtener categoría: ${error.message}`);
-    }
-  }
+/**
+ * Obtiene todas las categorías.
+ */
+const getAllCategories = async () => {
+    return await Category.find({});
+};
 
-  async update(id, data) {
-    try {
-      const category = await Category.findByIdAndUpdate(id, data, { new: true });
-      if (!category) throw new Error('Categoría no encontrada');
-      return category;
-    } catch (error) {
-      throw new Error(`Error al actualizar categoría: ${error.message}`);
-    }
-  }
+/**
+ * Obtiene una categoría por su ID.
+ */
+const getCategoryById = async (id) => {
+    return await Category.findById(id);
+};
 
-  async delete(id) {
-    try {
-      const category = await Category.findByIdAndDelete(id);
-      if (!category) throw new Error('Categoría no encontrada');
-      return category;
-    } catch (error) {
-      throw new Error(`Error al eliminar categoría: ${error.message}`);
+/**
+ * Actualiza una categoría existente.
+ */
+const updateCategory = async (id, updateData) => {
+    const updatedCategory = await Category.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: true }
+    );
+    
+    // El servicio maneja el caso de que el documento no exista
+    if (!updatedCategory) {
+        // Lanzamos un error simple, el controlador se encargará de mapear el 404
+        const error = new Error('Categoría no encontrada');
+        error.status = 404; // Etiquetamos el error para el controlador
+        throw error; 
     }
-  }
-}
+    
+    return updatedCategory;
+};
 
-module.exports = new CategoryService();
+/**
+ * Elimina una categoría por su ID.
+ */
+const deleteCategory = async (id) => {
+    const deletedCategory = await Category.findByIdAndDelete(id);
+    
+    // El servicio maneja el caso de que el documento no exista
+    if (!deletedCategory) {
+        const error = new Error('Categoría no encontrada');
+        error.status = 404;
+        throw error;
+    }
+
+    return deletedCategory;
+};
+
+module.exports = {
+    createCategory,
+    getAllCategories,
+    getCategoryById,
+    updateCategory,
+    deleteCategory,
+};

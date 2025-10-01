@@ -1,52 +1,59 @@
+// src/services/productService.js
+
 const Product = require('../models/productModel');
 
-class ProductService {
-  async create(data) {
-    try {
-      const product = new Product(data);
-      return await product.save();
-    } catch (error) {
-      throw new Error(`Error al crear producto: ${error.message}`);
-    }
-  }
+const createProduct = async (productData) => {
+    const newProduct = new Product(productData);
+    await newProduct.save();
+    return newProduct;
+};
 
-  async getAll() {
-    try {
-      return await Product.find().populate('category', 'name description');  // Populate categoría
-    } catch (error) {
-      throw new Error(`Error al obtener productos: ${error.message}`);
-    }
-  }
+const getAllProducts = async () => {
+    // Implementación de populate para incluir la categoría
+    const products = await Product.find({})
+        .populate('categoria', 'nombre descripcion') 
+        .exec();
+    return products;
+};
 
-  async getById(id) {
-    try {
-      const product = await Product.findById(id).populate('category', 'name description');
-      if (!product) throw new Error('Producto no encontrado');
-      return product;
-    } catch (error) {
-      throw new Error(`Error al obtener producto: ${error.message}`);
-    }
-  }
+const getProductById = async (id) => {
+    const product = await Product.findById(id)
+        .populate('categoria', 'nombre descripcion')
+        .exec();
+    return product;
+};
 
-  async update(id, data) {
-    try {
-      const product = await Product.findByIdAndUpdate(id, data, { new: true }).populate('category', 'name description');
-      if (!product) throw new Error('Producto no encontrado');
-      return product;
-    } catch (error) {
-      throw new Error(`Error al actualizar producto: ${error.message}`);
+const updateProduct = async (id, updateData) => {
+    const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: true }
+    );
+    
+    if (!updatedProduct) {
+        const error = new Error('Producto no encontrado');
+        error.status = 404; 
+        throw error;
     }
-  }
+    return updatedProduct;
+};
 
-  async delete(id) {
-    try {
-      const product = await Product.findByIdAndDelete(id);
-      if (!product) throw new Error('Producto no encontrado');
-      return product;
-    } catch (error) {
-      throw new Error(`Error al eliminar producto: ${error.message}`);
+const deleteProduct = async (id) => {
+    const deletedProduct = await Product.findByIdAndDelete(id);
+    
+    if (!deletedProduct) {
+        const error = new Error('Producto no encontrado');
+        error.status = 404;
+        throw error;
     }
-  }
-}
 
-module.exports = new ProductService();
+    return deletedProduct;
+};
+
+module.exports = {
+    createProduct,
+    getAllProducts,
+    getProductById,
+    updateProduct,
+    deleteProduct,
+};
