@@ -1,48 +1,40 @@
 # API RESTful CRUD con Node.js, Express y MongoDB
 
 ## Descripción
-Esta API gestiona productos y categorías con operaciones CRUD. Usa Mongoose para MongoDB, capa de servicios para lógica de negocio, y JWT para autenticación opcional. Productos referencian categorías con populate.
+Esta API RESTful gestiona usuarios, categorías y productos con operaciones CRUD completas. Implementa autenticación con JWT para rutas sensibles, encriptación de contraseñas con bcrypt, y relaciones entre entidades (productos referencian categorías) con populate en Mongoose. La lógica de negocio está separada en una capa de servicios, y los controladores son ligeros para manejar solo solicitudes HTTP.
 
-## Esquema de la DB
-- **Users**: { _id, nombre (String), email (String único), password (String hasheada), createdAt, updatedAt }
-- **Categories**: { _id, nombre (String único), descripcion (String), createdAt, updatedAt }
-- **Products**: { _id, nombre (String), descripcion (String), precio (Number), stock (Number), categoria (ObjectId ref Categories), createdAt, updatedAt }
+## Esquema de la Base de Datos
+- **Users** (Colección: `users`):
+  - `_id`: ObjectId (automático)
+  - `nombre`: String (requerido)
+  - `email`: String (requerido, único)
+  - `password`: String (hasheada con bcrypt, select: false)
+  - `createdAt`: Date (automático)
+  - `updatedAt`: Date (automático)
 
-## Tecnologías
-- Node.js / Express
-- MongoDB / Mongoose
-- bcryptjs (encriptación)
-- jsonwebtoken (JWT)
-- dotenv (entorno)
-- CORS
+- **Categories** (Colección: `categories`):
+  - `_id`: ObjectId (automático)
+  - `name`: String (requerido)
+  - `description`: String (requerido)
+  - `createdAt`: Date (automático)
+  - `updatedAt`: Date (automático)
 
-## Instrucciones para Correr
-1. Clona el repo: `git clone https://github.com/tu-usuario/proyecto-crud-mongodb.git`
-2. Instala dependencias: `npm install`
-3. Configura `.env` con tu MONGODB_URI y JWT_SECRET (ver .env.example).
-4. Conecta a MongoDB Atlas (crea cluster gratis).
-5. Ejecuta: `npm run dev`
-6. Prueba con Postman en http://localhost:3000
+- **Products** (Colección: `products`):
+  - `_id`: ObjectId (automático)
+  - `name`: String (requerido)
+  - `description`: String (requerido)
+  - `price`: Number (requerido, positivo)
+  - `stock`: Number (requerido, no negativo)
+  - `category`: ObjectId (ref a Categories, requerido)
+  - `createdAt`: Date (automático)
+  - `updatedAt`: Date (automático)
 
-## Endpoints
-Usa tablas para claridad:
+## Tecnologías Utilizadas
+- **Backend**: Node.js, Express.js
+- **Base de Datos**: MongoDB (con Mongoose ODM)
+- **Seguridad**: bcryptjs (encriptación de contraseñas), jsonwebtoken (JWT)
+- **Configuración**: dotenv (variables de entorno), cors (CORS)
+- **Desarrollo**: nodemon (auto-reload)
 
-| Método | Endpoint                  | Descripción                  | Autenticación | Ejemplo Body |
-|--------|---------------------------|------------------------------|---------------|--------------|
-| GET    | /api/categories           | Obtener todas categorías    | No           | - |
-| GET    | /api/categories/:id       | Obtener categoría por ID    | No           | - |
-| POST   | /api/categories           | Crear categoría             | Sí (JWT)     | { "nombre": "Ejemplo", "descripcion": "Desc" } |
-| PUT    | /api/categories/:id       | Actualizar categoría        | Sí (JWT)     | { "nombre": "Nuevo" } |
-| DELETE | /api/categories/:id       | Eliminar categoría          | Sí (JWT)     | - |
-| GET    | /api/products             | Obtener todos productos (con populate) | No | - |
-| GET    | /api/products/:id         | Obtener producto por ID (con populate) | No | - |
-| POST   | /api/products             | Crear producto              | Sí (JWT)     | { "nombre": "Prod", "descripcion": "Desc", "precio": 10, "stock": 5, "categoria": "ID" } |
-| PUT    | /api/products/:id         | Actualizar producto         | Sí (JWT)     | { "precio": 15 } |
-| DELETE | /api/products/:id         | Eliminar producto           | Sí (JWT)     | - |
-| POST   | /api/users/register       | Registrar usuario           | No           | { "nombre": "User", "email": "user@test.com", "password": "pass" } |
-| POST   | /api/users/login          | Login (retorna JWT)         | No           | { "email": "user@test.com", "password": "pass" } |
-
-Códigos HTTP: 200 (OK), 201 (Creado), 400 (Bad Request), 401 (No autorizado), 404 (No encontrado), 500 (Error servidor).
-
-## Ejemplos de Datos Mock
-- Ver arriba en la tabla.
+## Instalación y Ejecución
+1. Clona el repositorio:
