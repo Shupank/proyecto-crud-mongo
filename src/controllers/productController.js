@@ -80,9 +80,9 @@ const deleteProductController = async (req, res) => {
 };
 
 module.exports = {
-    createProductController,
-    getAllProductsController,
-    getProductByIdController,
-    updateProductController,
-    deleteProductController,
+    create: createProductController,
+    getAll: getAllProductsController,
+    getById: getProductByIdController,
+    update: updateProductController,
+    remove: deleteProductController,
 };
