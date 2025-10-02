@@ -1,11 +1,9 @@
-// src/middleware/errorMiddleware.js
-
-const AppError = require('../utils/AppError'); // Clase para errores personalizados
+const AppError = require('../utils/AppError');
 
 const errorHandler = (err, req, res, next) => {
-  console.error('❌ Error:', err);
+  console.error(err); // Para debug en consola
 
-  // Si es un error personalizado de AppError
+  // Si es un error personalizado (AppError)
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: 'error',
@@ -13,28 +11,26 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Errores de validación de Mongoose
+  // Errores de Mongoose / MongoDB
   if (err.name === 'ValidationError') {
     return res.status(400).json({
-      status: 'error',
+      status: 'fail',
       message: err.message,
     });
   }
 
-  // Errores de duplicación (como email único)
-  if (err.code && err.code === 11000) {
+  if (err.name === 'CastError') {
     return res.status(400).json({
-      status: 'error',
-      message: 'Error de duplicado: ya existe un registro con esos datos',
+      status: 'fail',
+      message: `ID inválido: ${err.value}`,
     });
   }
 
-  // Cualquier otro error
+  // Error genérico
   res.status(500).json({
     status: 'error',
-    message: 'Error interno del servidor',
+    message: 'Ocurrió un error en el servidor',
   });
 };
 
 module.exports = errorHandler;
-
