@@ -1,5 +1,3 @@
-// src/controllers/productController.js
-
 const productService = require('../services/productService');
 
 // Asumimos que esta función auxiliar se importa o se define en todos los controladores
