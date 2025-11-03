@@ -48,7 +48,7 @@ nodemon: ^3.1.10 (desarrollo, reinicio automático)
 # INSTRUCCIONES PARA CORRER EL PROYECTO
 
 Clona el repositorio:
-git clone https://github.com/tu-usuario/proyecto-crud-mongodb.git
+git clone https://github.com/Shupank/proyecto-crud-mongo
 cd proyecto-crud-mongodb
 
 

@@ -10,9 +10,13 @@ const getAll = async (req, res, next) => {
   }
 };
 
+// 🔹 Aquí aplicamos la mejora: devolvemos 404 si no se encuentra la categoría
 const getById = async (req, res, next) => {
   try {
     const category = await categoryService.getCategoryById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: 'Categoría no encontrada' });
+    }
     res.json(category);
   } catch (err) {
     next(err);
@@ -31,6 +35,9 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const updated = await categoryService.updateCategory(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ message: 'Categoría no encontrada' });
+    }
     res.json(updated);
   } catch (err) {
     next(err);
@@ -39,7 +46,10 @@ const update = async (req, res, next) => {
 
 const remove = async (req, res, next) => {
   try {
-    await categoryService.deleteCategory(req.params.id);
+    const deleted = await categoryService.deleteCategory(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Categoría no encontrada' });
+    }
     res.json({ message: 'Categoría eliminada' });
   } catch (err) {
     next(err);
